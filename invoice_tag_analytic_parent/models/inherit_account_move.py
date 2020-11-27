@@ -39,7 +39,11 @@ class accountMoveInherit(models.Model):
                                     ]
                                 child_tag_ids = self.env['account.analytic.default'].search(domain).mapped('child_analytic_tag_ids').ids
                                 existing_tags += child_tag_ids
-        
+                                domain2 = [
+                                    ('child_analytic_tag_ids','=',tags_sel),                             
+                                    ]
+                                parent_tag_ids = self.env['account.analytic.default'].search(domain).mapped('child_analytic_tag_ids').ids
+                                existing_tags += parent_tag_ids
         if vals.get('invoice_line_ids'):
             for lines in vals.get('invoice_line_ids'):
                 if lines[-1] and type(lines[-1]) == dict:
@@ -51,13 +55,27 @@ class accountMoveInherit(models.Model):
                                     ('analytic_tag_ids','=',tag),                             
                                     ]
                                 child_tag_ids = self.env['account.analytic.default'].search(domain).mapped('child_analytic_tag_ids').ids
+                                
                                 for c_tag in child_tag_ids:
+                                    if c_tag == 3:
+                                        print(c_tag)
                                     if c_tag not in existing_tags:
-                                        existing_tags += child_tag_ids
+                                        existing_tags += [c_tag]
+                                domain2 = [
+                                    ('child_analytic_tag_ids','=',tag),                             
+                                    ]
+                                parent_tag_ids = self.env['account.analytic.default'].search(domain2).mapped('analytic_tag_ids').ids
+
+                                for p_tag in parent_tag_ids:
+                                    if p_tag not in existing_tags:
+                                        existing_tags += [p_tag]
+                                
+                                # existing_tags += parent_tag_ids
                                 if len(child_tag_ids) == 0 and tag not in existing_tags:
                                     existing_tags += [tag]
-
-
+                                if len(parent_tag_ids) == 0 and tag not in existing_tags:
+                                    existing_tags += [tag]
+        
         print(existing_tags)
         obj = super(accountMoveInherit, self).write(vals)
         # if values.get('line_ids')[0][2].get('requisition_line_id'):
