@@ -20,7 +20,6 @@ class accountMoveInherit(models.Model):
                             existing_tags += child_tag_ids
 
         obj = super(accountMoveInherit, self).create(vals)
-        # import pdb; pdb.set_trace()
         return obj
 
     
@@ -75,7 +74,7 @@ class accountMoveInherit(models.Model):
                                     existing_tags += [tag]
                                 if len(parent_tag_ids) == 0 and tag not in existing_tags:
                                     existing_tags += [tag]
-        
+
         print(existing_tags)
         obj = super(accountMoveInherit, self).write(vals)
         # if values.get('line_ids')[0][2].get('requisition_line_id'):
@@ -83,21 +82,26 @@ class accountMoveInherit(models.Model):
         return obj
 
 
-# class accountMoveLinesInherit(models.Model):
-#     _inherit = "account.move.line"
-#     @api.onchange('analytic_tag_ids')
-#     def _onchange_analytic_tag_ids(self):
-#         print(self.analytic_tag_ids)
-        
-#         existing_tags = self.analytic_tag_ids.ids
-#         for tags_sel in self.analytic_tag_ids.ids:
-#             domain=[
-#                 ('analytic_tag_ids','=',tags_sel),                             
-#                 ]
-#             child_tag_ids = self.env['account.analytic.default'].search(domain).mapped('child_analytic_tag_ids').ids
-#             for child_tag in child_tag_ids:
-#                 if child_tag not in existing_tags:
-#                     existing_tags += child_tag_ids
-#         import pdb; pdb.set_trace()
-#         self.sudo().write({'analytic_tag_ids':existing_tags})
+class accountMoveLinesInherit(models.Model):
+    _inherit = "account.move.line"
+    @api.onchange('analytic_tag_ids')
+    def _onchange_analytic_tag_ids(self):
+        parent_ids = []
+        for tag_id in self.analytic_tag_ids[0:-1]:
+            tagid= tag_id.id.origin if type(tag_id.id) != int else tag_id.id
+            domain2 = [
+                ('child_analytic_tag_ids','=',tagid),                             
+                ]
+            parent_tag_ids = self.env['account.analytic.default'].search(domain2).mapped('analytic_tag_ids').ids
+            parent_ids += parent_tag_ids
 
+        if len(self.analytic_tag_ids) > 1:
+            newtag = self.analytic_tag_ids[-1]
+            tagid= newtag.id.origin if type(tag_id.id) != int else newtag.id
+            domain = [
+                ('child_analytic_tag_ids','=',tagid),                             
+                ]
+            parent_new = self.env['account.analytic.default'].search(domain).mapped('analytic_tag_ids').ids
+            for item in parent_new:
+                if item in parent_ids:
+                    raise UserError("You cannot select more than one child tag for same parent tag")
