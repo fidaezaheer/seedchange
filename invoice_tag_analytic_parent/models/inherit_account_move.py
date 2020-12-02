@@ -149,7 +149,7 @@ class accountMoveLinesInherit(models.Model):
     _inherit = "account.move.line"
     @api.onchange('analytic_tag_ids')
     def _onchange_analytic_tag_ids(self):
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         parent_ids = []
         for tag_id in self.analytic_tag_ids[0:-1]:
             tagid= tag_id.id.origin if type(tag_id.id) != int else tag_id.id
