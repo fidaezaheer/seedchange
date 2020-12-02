@@ -23,44 +23,39 @@ class accountMoveInherit(models.Model):
         return obj
     
     def write(self, vals):
-        # import pdb; pdb.set_trace()
-
         # domain=[('analytic_tag_ids','=',tags_sel),]
-        
         # child_tag_ids = self.env['account.analytic.default'].search(domain).mapped('child_analytic_tag_ids').ids
+        try:
+            vals['line_ids'] = vals.pop('invoice_line_ids')
 
-        vals['line_ids'] = vals.pop('invoice_line_ids')
-
-        if vals.get('line_ids'):
-            for lines in vals.get('line_ids'):
-                if lines[-1] and type(lines[-1]) == dict:
-                    if lines[-1].get('analytic_tag_ids'):
-                        existing_tags = lines[-1].get('analytic_tag_ids')[0][-1]
-                        # print("Existing Tags")
-                        # print(existing_tags)
-                        ex_ids = self.env['account.analytic.tag'].search([('id','in',existing_tags)])
-                        # import pdb; pdb.set_trace()
-                
-                        if len(existing_tags) >0:
-                            for tags_sel in existing_tags:
-                                domain=[
-                                    ('analytic_tag_ids','=',tags_sel),                             
-                                    ]
-                                child_tag_ids = self.env['account.analytic.default'].search(domain).mapped('child_analytic_tag_ids').ids
-                                # # for child in child_tag_ids:
-                                # #     print(self.env['account.analytic.default'].search([('id', '=', child)]).child_analytic_tag_ids.name)
-                                existing_tags += child_tag_ids
-                                # domain2 = [
-                                #     ('child_analytic_tag_ids','=',tags_sel),                             
-                                #     ]
-                                # parent_tag_ids = self.env['account.analytic.default'].search(domain2).mapped('child_analytic_tag_ids').ids
-                                # existing_tags += parent_tag_ids
+            if vals.get('line_ids'):
+                for lines in vals.get('line_ids'):
+                    if lines[-1] and type(lines[-1]) == dict:
+                        if lines[-1].get('analytic_tag_ids'):
+                            existing_tags = lines[-1].get('analytic_tag_ids')[0][-1]
+                            # print("Existing Tags")
+                            # print(existing_tags)
+                            ex_ids = self.env['account.analytic.tag'].search([('id','in',existing_tags)])
+                            if len(existing_tags) >0:
+                                for tags_sel in existing_tags:
+                                    domain=[
+                                        ('analytic_tag_ids','=',tags_sel),                             
+                                        ]
+                                    child_tag_ids = self.env['account.analytic.default'].search(domain).mapped('child_analytic_tag_ids').ids
+                                    # # for child in child_tag_ids:
+                                    # #     print(self.env['account.analytic.default'].search([('id', '=', child)]).child_analytic_tag_ids.name)
+                                    existing_tags += child_tag_ids
+                                    # domain2 = [
+                                    #     ('child_analytic_tag_ids','=',tags_sel),                             
+                                    #     ]
+                                    # parent_tag_ids = self.env['account.analytic.default'].search(domain2).mapped('child_analytic_tag_ids').ids
+                                    # existing_tags += parent_tag_ids
 
 
-        # vals['line_ids'] = vals.pop('invoice_line_ids')
-        
-        # import pdb; pdb.set_trace()
-
+            # vals['line_ids'] = vals.pop('invoice_line_ids')
+        except Exception as e:
+            print(e.args)
+   
 
         obj = super(accountMoveInherit, self).write(vals)
         print (vals)
