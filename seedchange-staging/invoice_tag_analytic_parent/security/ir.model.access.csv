@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_invoice_tag_analytic_parent_invoice_tag_analytic_parent,invoice_tag_analytic_parent.invoice_tag_analytic_parent,model_invoice_tag_analytic_parent_invoice_tag_analytic_parent,base.group_user,1,1,1,1
