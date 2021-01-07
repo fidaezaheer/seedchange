@@ -56,7 +56,7 @@ class accountMoveInherit(models.Model):
    
 
         obj = super(accountMoveInherit, self).write(vals)
-        print (vals)
+        # print (vals)
         return obj
 
     
@@ -205,42 +205,42 @@ class accountMoveLinesInherit(models.Model):
                     raise UserError("You cannot select more than one child tag for same parent tag")
         
         # For handling other tax_ids
-        if len(self.analytic_tag_ids) > 1:
+        # if len(self.analytic_tag_ids) > 1:
             
-            for tagid in self.analytic_tag_ids:
-                domain2 = [('analytic_tag_ids','in',tagid.id.origin)]
-                ana_tag = self.env['account.analytic.default'].search(domain2)
+        #     for tagid in self.analytic_tag_ids:
+        #         domain2 = [('analytic_tag_ids','in',tagid.id.origin)]
+        #         ana_tag = self.env['account.analytic.default'].search(domain2)
 
-                journal_entry = False
-                journal_tag = 0
-                if tagid.id.origin == ana_tag.travel_or_policy.id:
-                    journal_tag = tagid.id.origin
+        #         journal_entry = False
+        #         journal_tag = 0
+        #         if tagid.id.origin == ana_tag.travel_or_policy.id:
+        #             journal_tag = tagid.id.origin
                     
-                if tagid.id.origin == ana_tag.activity.id:
-                    journal_tag = tagid.id.origin
+        #         if tagid.id.origin == ana_tag.activity.id:
+        #             journal_tag = tagid.id.origin
 
-                if tagid.id.origin == ana_tag.partners.id:
-                    journal_tag = tagid.id.origin
+        #         if tagid.id.origin == ana_tag.partners.id:
+        #             journal_tag = tagid.id.origin
 
-                if tagid.id.origin == ana_tag.employee.id:
-                    journal_tag = tagid.id.origin
+        #         if tagid.id.origin == ana_tag.employee.id:
+        #             journal_tag = tagid.id.origin
 
-                if tagid.id.origin == ana_tag.budget.id:
-                    journal_tag = tagid.id.origin
+        #         if tagid.id.origin == ana_tag.budget.id:
+        #             journal_tag = tagid.id.origin
 
-                if tagid.id.origin == ana_tag.thematic.id:
-                    journal_tag = tagid.id.origin
+        #         if tagid.id.origin == ana_tag.thematic.id:
+        #             journal_tag = tagid.id.origin
 
-                if tagid.id.origin == ana_tag.department.id:
-                    journal_tag = tagid.id.origin
+        #         if tagid.id.origin == ana_tag.department.id:
+        #             journal_tag = tagid.id.origin
 
-                if tagid.id.origin == ana_tag.ora_category.id:
-                    journal_tag = tagid.id.origin
+        #         if tagid.id.origin == ana_tag.ora_category.id:
+        #             journal_tag = tagid.id.origin
 
-                if tagid.id.origin == ana_tag.funding_stream.id:
-                    journal_tag = tagid.id.origin
+        #         if tagid.id.origin == ana_tag.funding_stream.id:
+        #             journal_tag = tagid.id.origin
             
-            for line in self.move_id.line_ids:
-                if line.account_id == self.account_id:
-                    if journal_tag != 0:
-                        line.analytic_tag_ids += journal_tag
+        #     for line in self.move_id.line_ids:
+        #         if line.account_id == self.account_id:
+        #             if journal_tag != 0:
+        #                 line.analytic_tag_ids += journal_tag
