@@ -12,6 +12,10 @@
           <field name="parent_tag_id" />
         </xpath>
 
+        <field name="date_stop" position="after">
+            <field name="dimension_name" />
+          </field>
+
       </field>
     </record>
 

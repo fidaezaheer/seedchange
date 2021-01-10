@@ -24,6 +24,7 @@
 
     # always loaded
     'data': [
+        'views/inherit_account_move_line_views.xml',
         'views/inherit_view_account_analytic_default.xml',
     ],
     # only loaded in demonstration mode
