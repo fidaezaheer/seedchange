@@ -24,7 +24,7 @@
 
     # always loaded
     'data': [
-        # 'views/inherit_view_account_analytic_default.xml',
+        'views/inherit_view_account_analytic_default.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

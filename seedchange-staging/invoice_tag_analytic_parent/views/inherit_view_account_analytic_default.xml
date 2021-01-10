@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
   <data>
 
@@ -6,19 +7,9 @@
       <field name="model">account.analytic.default</field>
       <field name="inherit_id" ref="account.view_account_analytic_default_form"/>
       <field name="arch" type="xml">
+      
         <xpath expr="//field[@name='partner_id']" position="after">
-          <field name="child_analytic_tag_ids" widget="many2many_tags"/>
-        </xpath>
-        <xpath expr="//field[@name='date_stop']" position="after">
-          <field name="travel_or_policy"/>
-          <field name="activity"/>
-          <field name="partners"/>
-          <field name="employee"/>
-          <field name="budget"/>
-          <field name="thematic"/>
-          <field name="department"/>
-          <field name="ora_category"/>
-          <field name="funding_stream"/>
+          <field name="parent_tag_id" />
         </xpath>
 
       </field>

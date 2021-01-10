@@ -34,10 +34,30 @@ class InheritAccountMoveLineAuto(models.Model):
             if not line.tax_repartition_line_id and any(tax.analytic for tax in line.tax_ids):
                 line.recompute_tax_line = True
 
+            # parent_ids = []
+            # for tag_id in line.analytic_tag_ids[0:-1]:
+            #     tagid= tag_id.id.origin if type(tag_id.id) != int else tag_id.id
+            #     domain = [
+            #         ('analytic_tag_ids','=',tagid),                             
+            #         ]
+            #     parent_tag_ids = self.env['account.analytic.default'].search(domain).mapped('child_analytic_tag_ids').ids
+            #     parent_ids += parent_tag_ids
+
+            # if len(line.analytic_tag_ids) > 1:
+            #     newtag = line.analytic_tag_ids[-1]
+            #     tagid = newtag.id.origin if type(tag_id.id) != int else newtag.id
+            #     domain = [
+            #         ('analytic_tag_ids','=',tagid),                             
+            #         ]
+            #     parent_new = self.env['account.analytic.default'].search(domain).mapped('child_analytic_tag_ids').ids
+            #     for item in parent_new:
+            #         if item in parent_ids:
+            #             raise UserError("You cannot select more than one child tag for same parent tag")
+
             for tag_id in line.analytic_tag_ids.ids:
-                # print('1st tag ====> ', tag_id)
+                print('mv ln 1st tag ====> ', tag_id)
                 matched_analytics_default_rule = self.env['account.analytic.default'].search([('analytic_tag_ids', '=', tag_id)])
-                # print('matched_analytics_default_rule ===> ', matched_analytics_default_rule)
+                print('mv ln matched_analytics_default_rule ===> ', matched_analytics_default_rule)
                 if matched_analytics_default_rule:
                     if matched_analytics_default_rule.dimension_name:
                         dimension_name = matched_analytics_default_rule.dimension_name
