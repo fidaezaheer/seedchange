@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+
+        <record id="view_acc_ana_def_form_inh" model="ir.ui.view">
+            <field name="name">account.analytic.default</field>
+            <field name="model">account.analytic.default</field>
+            <field name="inherit_id" ref="account.view_account_analytic_default_form" />
+            <field name="arch" type="xml">
+
+                <field name="date_stop" position="after">
+                    <field name="dimension_name" />
+                </field>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>
