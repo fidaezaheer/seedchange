@@ -21,7 +21,7 @@ class InheritAccountMoveLineTag(models.Model):
         if vals_list[0].get('analytic_tag_ids'):   #    [[6, False, [2, 196]]]
             ids_to_browse = vals_list[0].get('analytic_tag_ids')[0][2]
             
-            if ids_to_browse:
+            if ids_to_browse:               #   1st Rule
                 ids_to_append = []
                 for tag_id in ids_to_browse:
                     target_tag_id = self.env['account.analytic.tag'].browse(tag_id)
@@ -30,38 +30,47 @@ class InheritAccountMoveLineTag(models.Model):
                         matched_analytics_default_id = self.env['account.analytic.default'].search([('analytic_tag_ids', '=', target_tag_id.id)])
                         print(matched_analytics_default_id)
                         if matched_analytics_default_id:
-                            dimension_name = matched_analytics_default_id.dimension_name
                             target_tag_parent_id = matched_analytics_default_id.parent_tag_id
 
-                            if target_tag_parent_id:            #   1st rule
+                            if target_tag_parent_id:
                                 ids_to_append.append(matched_analytics_default_id.parent_tag_id.id)
                             else:
                                 pass
-
-                            if dimension_name:                  #   2nd Rule
-                                if dimension_name == 'travel_policy':
-                                    vals_list[0]['travel_policy_id'] = target_tag_id.id
-                                if dimension_name == 'thematic':
-                                    vals_list[0]['thematic_id'] = target_tag_id.id
-                                if dimension_name == 'cra_category':
-                                    vals_list[0]['cra_category_id'] = target_tag_id.id
-                                if dimension_name == 'activity':
-                                    vals_list[0]['activity_id'] = target_tag_id.id
-                                if dimension_name == 'partners':
-                                    vals_list[0]['partners_id'] = target_tag_id.id
-                                if dimension_name == 'employee':
-                                    vals_list[0]['employee_id'] = target_tag_id.id
-                                if dimension_name == 'budget':
-                                    vals_list[0]['budget_id'] = target_tag_id.id
-                                if dimension_name == 'department':
-                                    vals_list[0]['department_id'] = target_tag_id.id
-                                if dimension_name == 'funding_stream':
-                                    vals_list[0]['funding_stream_id'] = target_tag_id.id
-                            else:
-                                pass
       
-                ids_to_browse = ids_to_browse + ids_to_append
-                vals_list[0]['analytic_tag_ids'] = ids_to_browse
+                new_ids_to_browse = ids_to_browse + ids_to_append
+                vals_list[0]['analytic_tag_ids'] = new_ids_to_browse
+
+                if new_ids_to_browse:                   #   2nd Rule
+                    for tag_id in new_ids_to_browse:
+                        target_tag_id = self.env['account.analytic.tag'].browse(tag_id)
+                        # print(target_tag_id)
+                        if target_tag_id:
+                            matched_analytics_default_id = self.env['account.analytic.default'].search([('analytic_tag_ids', '=', target_tag_id.id)])
+                            # print(matched_analytics_default_id)
+                            if matched_analytics_default_id:
+                                dimension_name = matched_analytics_default_id.dimension_name
+
+                                if dimension_name:                  
+                                    if dimension_name == 'travel_policy':
+                                        vals_list[0]['travel_policy_id'] = target_tag_id.id
+                                    if dimension_name == 'thematic':
+                                        vals_list[0]['thematic_id'] = target_tag_id.id
+                                    if dimension_name == 'cra_category':
+                                        vals_list[0]['cra_category_id'] = target_tag_id.id
+                                    if dimension_name == 'activity':
+                                        vals_list[0]['activity_id'] = target_tag_id.id
+                                    if dimension_name == 'partners':
+                                        vals_list[0]['partners_id'] = target_tag_id.id
+                                    if dimension_name == 'employee':
+                                        vals_list[0]['employee_id'] = target_tag_id.id
+                                    if dimension_name == 'budget':
+                                        vals_list[0]['budget_id'] = target_tag_id.id
+                                    if dimension_name == 'department':
+                                        vals_list[0]['department_id'] = target_tag_id.id
+                                    if dimension_name == 'funding_stream':
+                                        vals_list[0]['funding_stream_id'] = target_tag_id.id
+                                else:
+                                    pass
 
             else:
                 pass
@@ -74,7 +83,7 @@ class InheritAccountMoveLineTag(models.Model):
             if vals.get('analytic_tag_ids'):   #    [[6, False, [2, 196]]]
                 ids_to_browse = vals.get('analytic_tag_ids')[0][2]
                 
-                if ids_to_browse:
+                if ids_to_browse:           #   1st rule
                     ids_to_append = []
 
                     for tag_id in ids_to_browse:
@@ -84,38 +93,47 @@ class InheritAccountMoveLineTag(models.Model):
                             matched_analytics_default_id = self.env['account.analytic.default'].search([('analytic_tag_ids', '=', target_tag_id.id)])
                             print(matched_analytics_default_id)
                             if matched_analytics_default_id:
-                                dimension_name = matched_analytics_default_id.dimension_name
                                 target_tag_parent_id = matched_analytics_default_id.parent_tag_id
 
-                                if target_tag_parent_id:            #   1st rule
+                                if target_tag_parent_id:            
                                     ids_to_append.append(matched_analytics_default_id.parent_tag_id.id)
                                 else:
                                     pass
-
-                                if dimension_name:                  #   2nd Rule
-                                    if dimension_name == 'travel_policy':
-                                        vals['travel_policy_id'] = target_tag_id.id
-                                    if dimension_name == 'thematic':
-                                        vals['thematic_id'] = target_tag_id.id
-                                    if dimension_name == 'cra_category':
-                                        vals['cra_category_id'] = target_tag_id.id
-                                    if dimension_name == 'activity':
-                                        vals['activity_id'] = target_tag_id.id
-                                    if dimension_name == 'partners':
-                                        vals['partners_id'] = target_tag_id.id
-                                    if dimension_name == 'employee':
-                                        vals['employee_id'] = target_tag_id.id
-                                    if dimension_name == 'budget':
-                                        vals['budget_id'] = target_tag_id.id
-                                    if dimension_name == 'department':
-                                        vals['department_id'] = target_tag_id.id
-                                    if dimension_name == 'funding_stream':
-                                        vals['funding_stream_id'] = target_tag_id.id
-                                else:
-                                    pass
         
-                    ids_to_browse = ids_to_browse + ids_to_append
-                    vals['analytic_tag_ids'] = ids_to_browse
+                    new_ids_to_browse = ids_to_browse + ids_to_append
+                    vals['analytic_tag_ids'] = new_ids_to_browse
+
+                    if new_ids_to_browse:               #   2nd Rule
+                        for tag_id in new_ids_to_browse:
+                            target_tag_id = self.env['account.analytic.tag'].browse(tag_id)
+                            # print(target_tag_id)
+                            if target_tag_id:
+                                matched_analytics_default_id = self.env['account.analytic.default'].search([('analytic_tag_ids', '=', target_tag_id.id)])
+                                # print(matched_analytics_default_id)
+                                if matched_analytics_default_id:
+                                    dimension_name = matched_analytics_default_id.dimension_name
+
+                                    if dimension_name:                  
+                                        if dimension_name == 'travel_policy':
+                                            vals['travel_policy_id'] = target_tag_id.id
+                                        if dimension_name == 'thematic':
+                                            vals['thematic_id'] = target_tag_id.id
+                                        if dimension_name == 'cra_category':
+                                            vals['cra_category_id'] = target_tag_id.id
+                                        if dimension_name == 'activity':
+                                            vals['activity_id'] = target_tag_id.id
+                                        if dimension_name == 'partners':
+                                            vals['partners_id'] = target_tag_id.id
+                                        if dimension_name == 'employee':
+                                            vals['employee_id'] = target_tag_id.id
+                                        if dimension_name == 'budget':
+                                            vals['budget_id'] = target_tag_id.id
+                                        if dimension_name == 'department':
+                                            vals['department_id'] = target_tag_id.id
+                                        if dimension_name == 'funding_stream':
+                                            vals['funding_stream_id'] = target_tag_id.id
+                                    else:
+                                        pass
 
                 else:
                     pass
