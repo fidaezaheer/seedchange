@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+
+        <record id="view_acc_mv_ln_form_inh" model="ir.ui.view">
+            <field name="name">account.move.line.inher.auto</field>
+            <field name="model">account.move.line</field>
+            <field name="inherit_id" ref="account.view_move_line_form" />
+            <field name="arch" type="xml">
+
+                <field name="analytic_tag_ids" position="after">
+                    <field name="travel_policy_id" />
+                    <field name="activity_id" />
+                    <field name="partners_id" />
+                    <field name="employee_id" />
+                    <field name="budget_id" />
+                    <field name="thematic_id" />
+                    <field name="department_id" />
+                    <field name="cra_category_id" />
+                    <field name="funding_stream_id" />
+                </field>
+
+            </field>
+        </record>
+
+        <record id="view_acc_mv_form_inh" model="ir.ui.view">
+            <field name="name">account.move.form.inher.auto</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form" />
+            <field name="arch" type="xml">
+
+                <xpath expr="//notebook/page[@id='aml_tab']/field/tree/field[@name='analytic_tag_ids']" position="after">
+                    <field name="travel_policy_id" invisible="1" />
+                    <field name="activity_id" invisible="1" />
+                    <field name="partners_id" invisible="1" />
+                    <field name="employee_id" invisible="1" />
+                    <field name="budget_id" invisible="1" />
+                    <field name="thematic_id" invisible="1" />
+                    <field name="department_id" invisible="1" />
+                    <field name="cra_category_id" invisible="1" />
+                    <field name="funding_stream_id" invisible="1" />
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>
