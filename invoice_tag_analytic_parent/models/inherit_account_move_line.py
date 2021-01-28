@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 
 class InheritAccountMoveLineTag(models.Model):
@@ -32,13 +33,18 @@ class InheritAccountMoveLineTag(models.Model):
                         if target_tag_id:
                             matched_analytics_default_id = self.env['account.analytic.default'].search([('analytic_tag_ids', '=', target_tag_id.id)])
                             # print(matched_analytics_default_id)
-                            if matched_analytics_default_id:
+                            if matched_analytics_default_id and len(matched_analytics_default_id) == 1:
+                                # print(matched_analytics_default_id, len(matched_analytics_default_id))
                                 target_tag_parent_id = matched_analytics_default_id.parent_tag_id
-
+                                # print(target_tag_parent_id, len(target_tag_parent_id))
                                 if target_tag_parent_id:
                                     ids_to_append.append(matched_analytics_default_id.parent_tag_id.id)
                                 else:
                                     pass
+                            
+                            else:
+                                raise UserError(_('There are multiple account Analytic Defaults Rules ralated with the tag - %s',target_tag_id.name))
+                            
         
                     new_ids_to_browse = ids_to_browse + ids_to_append
                     vals_elem['analytic_tag_ids'] = new_ids_to_browse
@@ -96,13 +102,16 @@ class InheritAccountMoveLineTag(models.Model):
                         if target_tag_id:
                             matched_analytics_default_id = self.env['account.analytic.default'].search([('analytic_tag_ids', '=', target_tag_id.id)])
                             # print(matched_analytics_default_id)
-                            if matched_analytics_default_id:
+                            if matched_analytics_default_id and len(matched_analytics_default_id) == 1:
                                 target_tag_parent_id = matched_analytics_default_id.parent_tag_id
 
                                 if target_tag_parent_id:            
                                     ids_to_append.append(matched_analytics_default_id.parent_tag_id.id)
                                 else:
                                     pass
+                            
+                            else:
+                                raise UserError(_('There are multiple account Analytic Defaults Rules ralated with the tag - %s',target_tag_id.name))
         
                     new_ids_to_browse = ids_to_browse + ids_to_append
                     vals['analytic_tag_ids'] = new_ids_to_browse
