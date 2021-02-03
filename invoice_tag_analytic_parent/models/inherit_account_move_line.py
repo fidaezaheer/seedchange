@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 
 
 class InheritAccountMoveLineTag(models.Model):
@@ -15,131 +15,39 @@ class InheritAccountMoveLineTag(models.Model):
     cra_category_id = fields.Many2one('account.analytic.tag', string='CRA Category')
     funding_stream_id = fields.Many2one('account.analytic.tag', string='Funding Stream')
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        # print('ml create ======> ', len(vals_list))
-        # print('ml create ======> ', vals_list)
-        for vals_elem in vals_list:
-            # print(vals_elem)
-            if vals_elem.get('analytic_tag_ids'):   #    [[6, False, [2, 196]]]
-                ids_to_browse = vals_elem.get('analytic_tag_ids')[0][2]
-                
-                if ids_to_browse:               #   1st Rule
-                    ids_to_append = []
-                    for tag_id in ids_to_browse:
-                        target_tag_id = self.env['account.analytic.tag'].browse(tag_id)
-                        # print(target_tag_id)
-                        if target_tag_id:
-                            matched_analytics_default_id = self.env['account.analytic.default'].search([('analytic_tag_ids', '=', target_tag_id.id)])
-                            # print(matched_analytics_default_id)
-                            if matched_analytics_default_id:
-                                target_tag_parent_id = matched_analytics_default_id.parent_tag_id
+    @api.onchange('analytic_tag_ids')
+    def _onchange_analytic_tags(self):
+        analytic_rules = self.env['account.analytic.default'].search([('analytic_tag_ids', 'in', self.analytic_tag_ids.ids)])
+        rules_parent_tag = self.env['account.analytic.tag']
+        if analytic_rules:
+            self.analytic_tag_ids = [(6, 0, analytic_rules.parent_tag_id.ids + self.analytic_tag_ids.ids or [])]
+        for tag in self.analytic_tag_ids:
+            rules = self.env['account.analytic.default'].search([('analytic_tag_ids', 'in', tag.ids)])
+            if rules_parent_tag not in rules.parent_tag_id:
+                rules_parent_tag |= rules.parent_tag_id
+            else:
+                return {'warning': {'title': _('Multiple Child Tag!'), 'message': ('There are multiple Child analytic tag %s' % ', '.join(analytic_rules.analytic_tag_ids.mapped('name')))}}
+            if len(rules) > 1:
+                return {'warning': {'title': _('Multiple Parent Tag!'), 'message': ('There are multiple parent analytic tag %s' % ', '.join(analytic_rules.parent_tag_id.mapped('name')))}}
+        return {}
 
-                                if target_tag_parent_id:
-                                    ids_to_append.append(matched_analytics_default_id.parent_tag_id.id)
-                                else:
-                                    pass
-        
-                    new_ids_to_browse = ids_to_browse + ids_to_append
-                    vals_elem['analytic_tag_ids'] = new_ids_to_browse
-
-                    if new_ids_to_browse:                   #   2nd Rule
-                        for tag_id in new_ids_to_browse:
-                            target_tag_id = self.env['account.analytic.tag'].browse(tag_id)
-                            # print(target_tag_id)
-                            if target_tag_id:
-                                matched_analytics_default_id = self.env['account.analytic.default'].search([('analytic_tag_ids', '=', target_tag_id.id)])
-                                # print(matched_analytics_default_id)
-                                if matched_analytics_default_id:
-                                    dimension_name = matched_analytics_default_id.dimension_name
-
-                                    if dimension_name:                  
-                                        if dimension_name == 'travel_policy':
-                                            vals_elem['travel_policy_id'] = target_tag_id.id
-                                        if dimension_name == 'thematic':
-                                            vals_elem['thematic_id'] = target_tag_id.id
-                                        if dimension_name == 'cra_category':
-                                            vals_elem['cra_category_id'] = target_tag_id.id
-                                        if dimension_name == 'activity':
-                                            vals_elem['activity_id'] = target_tag_id.id
-                                        if dimension_name == 'partners':
-                                            vals_elem['partners_id'] = target_tag_id.id
-                                        if dimension_name == 'employee':
-                                            vals_elem['employee_id'] = target_tag_id.id
-                                        if dimension_name == 'budget':
-                                            vals_elem['budget_id'] = target_tag_id.id
-                                        if dimension_name == 'department':
-                                            vals_elem['department_id'] = target_tag_id.id
-                                        if dimension_name == 'funding_stream':
-                                            vals_elem['funding_stream_id'] = target_tag_id.id
-                                    else:
-                                        pass
-
-                else:
-                    pass
-
-        return super(InheritAccountMoveLineTag, self).create(vals_list)
-
-    def write(self, vals):
-        # print(vals)
-        for line in self:
-            # print("ml write =======================================")
-            if vals.get('analytic_tag_ids'):   #    [[6, False, [2, 196]]]
-                ids_to_browse = vals.get('analytic_tag_ids')[0][2]
-                
-                if ids_to_browse:           #   1st rule
-                    ids_to_append = []
-
-                    for tag_id in ids_to_browse:
-                        target_tag_id = self.env['account.analytic.tag'].browse(tag_id)
-                        # print(target_tag_id)
-                        if target_tag_id:
-                            matched_analytics_default_id = self.env['account.analytic.default'].search([('analytic_tag_ids', '=', target_tag_id.id)])
-                            # print(matched_analytics_default_id)
-                            if matched_analytics_default_id:
-                                target_tag_parent_id = matched_analytics_default_id.parent_tag_id
-
-                                if target_tag_parent_id:            
-                                    ids_to_append.append(matched_analytics_default_id.parent_tag_id.id)
-                                else:
-                                    pass
-        
-                    new_ids_to_browse = ids_to_browse + ids_to_append
-                    vals['analytic_tag_ids'] = new_ids_to_browse
-
-                    if new_ids_to_browse:               #   2nd Rule
-                        for tag_id in new_ids_to_browse:
-                            target_tag_id = self.env['account.analytic.tag'].browse(tag_id)
-                            # print(target_tag_id)
-                            if target_tag_id:
-                                matched_analytics_default_id = self.env['account.analytic.default'].search([('analytic_tag_ids', '=', target_tag_id.id)])
-                                # print(matched_analytics_default_id)
-                                if matched_analytics_default_id:
-                                    dimension_name = matched_analytics_default_id.dimension_name
-
-                                    if dimension_name:                  
-                                        if dimension_name == 'travel_policy':
-                                            vals['travel_policy_id'] = target_tag_id.id
-                                        if dimension_name == 'thematic':
-                                            vals['thematic_id'] = target_tag_id.id
-                                        if dimension_name == 'cra_category':
-                                            vals['cra_category_id'] = target_tag_id.id
-                                        if dimension_name == 'activity':
-                                            vals['activity_id'] = target_tag_id.id
-                                        if dimension_name == 'partners':
-                                            vals['partners_id'] = target_tag_id.id
-                                        if dimension_name == 'employee':
-                                            vals['employee_id'] = target_tag_id.id
-                                        if dimension_name == 'budget':
-                                            vals['budget_id'] = target_tag_id.id
-                                        if dimension_name == 'department':
-                                            vals['department_id'] = target_tag_id.id
-                                        if dimension_name == 'funding_stream':
-                                            vals['funding_stream_id'] = target_tag_id.id
-                                    else:
-                                        pass
-
-                else:
-                    pass
-
-            return super(InheritAccountMoveLineTag, line).write(vals)
+    @api.depends('product_id', 'account_id', 'partner_id', 'date')
+    def _compute_analytic_account(self):
+        print("_compute_analytic_account >>>>>>>>>>>>>", self)
+        for record in self:
+            print("record >>>>>>>>>>>>>>", record)
+            if not record.exclude_from_invoice_tab or not record.move_id.is_invoice(include_receipts=True):
+                rec = self.env['account.analytic.default'].account_get(
+                    product_id=record.product_id.id,
+                    partner_id=record.partner_id.commercial_partner_id.id or record.move_id.partner_id.commercial_partner_id.id,
+                    account_id=record.account_id.id,
+                    user_id=record.env.uid,
+                    date=record.date,
+                    company_id=record.move_id.company_id.id
+                )
+                print("rec >>>>>>>>>>>>", rec)
+                if rec:
+                    record.analytic_account_id = rec.analytic_id
+                    analytic_rules = self.env['account.analytic.default'].search([('analytic_tag_ids', 'in', rec.analytic_tag_ids.ids)])
+                    tag = analytic_rules.parent_tag_id and analytic_rules.parent_tag_id.ids or []
+                    rec.analytic_tag_ids = [(6, 0, tag + rec.analytic_tag_ids.ids or [])]
