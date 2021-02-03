@@ -18,10 +18,15 @@ class InheritAccountMoveLineTag(models.Model):
     @api.onchange('analytic_tag_ids')
     def _onchange_analytic_tags(self):
         analytic_rules = self.env['account.analytic.default'].search([('analytic_tag_ids', 'in', self.analytic_tag_ids.ids)])
+        rules_parent_tag = self.env['account.analytic.tag']
         if analytic_rules:
             self.analytic_tag_ids = [(6, 0, analytic_rules.parent_tag_id.ids + self.analytic_tag_ids.ids or [])]
         for tag in self.analytic_tag_ids:
             rules = self.env['account.analytic.default'].search([('analytic_tag_ids', 'in', tag.ids)])
+            if rules_parent_tag not in rules.parent_tag_id:
+                rules_parent_tag |= rules.parent_tag_id
+            else:
+                return {'warning': {'title': _('Multiple Child Tag!'), 'message': ('There are multiple Child analytic tag %s' % ', '.join(analytic_rules.analytic_tag_ids.mapped('name')))}}
             if len(rules) > 1:
                 return {'warning': {'title': _('Multiple Parent Tag!'), 'message': ('There are multiple parent analytic tag %s' % ', '.join(analytic_rules.parent_tag_id.mapped('name')))}}
         return {}
