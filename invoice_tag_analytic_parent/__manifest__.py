@@ -19,7 +19,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['account','account_accountant'],
+    'depends': ['account', 'account_accountant'],
 
     # always loaded
     'data': [
@@ -30,4 +30,7 @@
     'demo': [
         'demo/demo.xml',
     ],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
 }
