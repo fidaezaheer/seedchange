@@ -20,10 +20,10 @@ class InheritAccountMoveLineTag(models.Model):
         analytic_rules = self.env['account.analytic.default'].search([('analytic_tag_ids', 'in', self.analytic_tag_ids.ids)])
         if analytic_rules:
             self.analytic_tag_ids = [(6, 0, analytic_rules.parent_tag_id.ids + self.analytic_tag_ids.ids or [])]
-        tag = analytic_rules.parent_tag_id.mapped('name')
-        print("tag >>>>>>>>>>>", tag)
-        if len(analytic_rules) > 1:
-            return {'warning': {'title': _('Multiple Parent Tag!'), 'message': ('There are multiple parent analytic tag %s' % ', '.join(analytic_rules.parent_tag_id.mapped('name')))}}
+        for tag in self.analytic_tag_ids:
+            rules = self.env['account.analytic.default'].search([('analytic_tag_ids', 'in', tag.ids)])
+            if len(rules) > 1:
+                return {'warning': {'title': _('Multiple Parent Tag!'), 'message': ('There are multiple parent analytic tag %s' % ', '.join(analytic_rules.parent_tag_id.mapped('name')))}}
         return {}
 
     @api.depends('product_id', 'account_id', 'partner_id', 'date')
