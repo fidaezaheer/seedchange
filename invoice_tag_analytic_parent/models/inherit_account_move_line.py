@@ -51,4 +51,4 @@ class InheritAccountMoveLineTag(models.Model):
                     record.analytic_account_id = rec.analytic_id
                     analytic_rules = self.env['account.analytic.default'].search([('analytic_tag_ids', 'in', rec.analytic_tag_ids.ids)])
                     tag = analytic_rules.parent_tag_id and analytic_rules.parent_tag_id.ids or []
-                    rec.analytic_tag_ids = [(6, 0, tag + rec.analytic_tag_ids.ids or [])]
+                    record.analytic_tag_ids = [(6, 0, tag + rec.analytic_tag_ids.ids or [])]
