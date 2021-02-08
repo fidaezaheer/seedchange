@@ -20,8 +20,11 @@ class InheritAccountMoveLineTag(models.Model):
         analytic_tags = self.analytic_tag_ids
         analytic_rules = self.env['account.analytic.default'].search([('analytic_tag_ids', 'in', self.analytic_tag_ids.ids)])
         rules_parent_tag = self.env['account.analytic.tag']
-        if analytic_rules:
+        if analytic_rules and analytic_rules.parent_tag_id:
+            print("analytic_rules.parent_tag_id.ids >>>>>>>>>>", analytic_rules.parent_tag_id.ids, self.analytic_tag_ids.ids)
             self.analytic_tag_ids = [(6, 0, analytic_rules.parent_tag_id.ids + self.analytic_tag_ids.ids or [])]
+        else:
+            self.analytic_tag_ids = [(6, 0, self.analytic_tag_ids.ids or [])]
         for tag in analytic_tags:
             rules = self.env['account.analytic.default'].search([('analytic_tag_ids', 'in', tag.ids)])
             if rules_parent_tag not in rules.parent_tag_id:
@@ -30,6 +33,36 @@ class InheritAccountMoveLineTag(models.Model):
                 return {'warning': {'title': _('Multiple Child Tag!'), 'message': ('There are multiple Child analytic tag %s' % ', '.join(analytic_rules.analytic_tag_ids.mapped('name')))}}
             if len(rules) > 1:
                 return {'warning': {'title': _('Multiple Parent Tag!'), 'message': ('There are multiple parent analytic tag %s' % ', '.join(analytic_rules.parent_tag_id.mapped('name')))}}
+                print("analytic_rules >>>>>>>>>>>>>>>>>>>", analytic_rules)
+        self.travel_policy_id = False
+        self.thematic_id = False
+        self.cra_category_id = False
+        self.activity_id = False
+        self.partners_id = False
+        self.employee_id = False
+        self.budget_id = False
+        self.department_id = False
+        self.funding_stream_id = False
+        for rule in analytic_rules:
+            print("rule.dimension_name >>>>>>>>>>>>>", rule.dimension_name, rule, rule.analytic_tag_ids)
+            if rule.dimension_name == 'travel_policy':
+                self.travel_policy_id = rule.analytic_tag_ids.ids[0]
+            elif rule.dimension_name == 'thematic':
+                self.thematic_id = rule.analytic_tag_ids.ids[0]
+            elif rule.dimension_name == 'cra_category':
+                self.cra_category_id = rule.analytic_tag_ids.ids[0]
+            elif rule.dimension_name == 'activity':
+                self.activity_id = rule.analytic_tag_ids.ids[0]
+            elif rule.dimension_name == 'partners':
+                self.partners_id = rule.analytic_tag_ids.ids[0]
+            elif rule.dimension_name == 'employee':
+                self.employee_id = rule.analytic_tag_ids.ids[0]
+            elif rule.dimension_name == 'budget':
+                self.budget_id = rule.analytic_tag_ids.ids[0]
+            elif rule.dimension_name == 'department':
+                self.department_id = rule.analytic_tag_ids.ids[0]
+            elif rule.dimension_name == 'funding_stream':
+                self.funding_stream_id = rule.analytic_tag_ids.ids[0]
         return {}
 
     @api.depends('product_id', 'account_id', 'partner_id', 'date')
@@ -46,8 +79,8 @@ class InheritAccountMoveLineTag(models.Model):
                     date=record.date,
                     company_id=record.move_id.company_id.id
                 )
-                print("rec >>>>>>>>>>>>", rec)
-                if rec:
+                print("rec >>>>>>>>>>>>", rec, rec.dimension_name)
+                if rec and rec.dimension_name:
                     record.analytic_account_id = rec.analytic_id
                     analytic_rules = self.env['account.analytic.default'].search([('analytic_tag_ids', 'in', rec.analytic_tag_ids.ids)])
                     tag = analytic_rules.parent_tag_id and analytic_rules.parent_tag_id.ids or []

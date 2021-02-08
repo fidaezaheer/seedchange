@@ -7,7 +7,6 @@
             <field name="model">account.move.line</field>
             <field name="inherit_id" ref="account.view_move_line_form" />
             <field name="arch" type="xml">
-
                 <field name="analytic_tag_ids" position="after">
                     <field name="travel_policy_id" />
                     <field name="activity_id" />
@@ -29,7 +28,40 @@
             <field name="inherit_id" ref="account.view_move_form" />
             <field name="arch" type="xml">
 
-                <xpath expr="//notebook/page[@id='aml_tab']/field/tree/field[@name='analytic_tag_ids']" position="after">
+                <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/tree/field[@name='analytic_tag_ids']" position="after">
+                    <field name="travel_policy_id" invisible="1" />
+                    <field name="activity_id" invisible="1" />
+                    <field name="partners_id" invisible="1" />
+                    <field name="employee_id" invisible="1" />
+                    <field name="budget_id" invisible="1" />
+                    <field name="thematic_id" invisible="1" />
+                    <field name="department_id" invisible="1" />
+                    <field name="cra_category_id" invisible="1" />
+                    <field name="funding_stream_id" invisible="1" />
+                </xpath>
+                <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/form/sheet/group/field[@name='analytic_tag_ids']" position="after">
+                    <field name="travel_policy_id" invisible="1" />
+                    <field name="activity_id" invisible="1" />
+                    <field name="partners_id" invisible="1" />
+                    <field name="employee_id" invisible="1" />
+                    <field name="budget_id" invisible="1" />
+                    <field name="thematic_id" invisible="1" />
+                    <field name="department_id" invisible="1" />
+                    <field name="cra_category_id" invisible="1" />
+                    <field name="funding_stream_id" invisible="1" />
+                </xpath>
+                <xpath expr="//notebook/page[@id='aml_tab']/field[@name='line_ids']/tree/field[@name='analytic_tag_ids']" position="after">
+                    <field name="travel_policy_id" invisible="1" />
+                    <field name="activity_id" invisible="1" />
+                    <field name="partners_id" invisible="1" />
+                    <field name="employee_id" invisible="1" />
+                    <field name="budget_id" invisible="1" />
+                    <field name="thematic_id" invisible="1" />
+                    <field name="department_id" invisible="1" />
+                    <field name="cra_category_id" invisible="1" />
+                    <field name="funding_stream_id" invisible="1" />
+                </xpath>
+                <xpath expr="//notebook/page[@id='aml_tab']/field[@name='line_ids']/form/group/field[@name='analytic_tag_ids']" position="after">
                     <field name="travel_policy_id" invisible="1" />
                     <field name="activity_id" invisible="1" />
                     <field name="partners_id" invisible="1" />
